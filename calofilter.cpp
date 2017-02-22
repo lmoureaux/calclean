@@ -107,6 +107,12 @@
  * c++ `root-config --cflags` main.cpp libcalofilter.a -o analysis `root-config --libs`
  * ~~~~
  *
+ * You will then have to include the header file only:
+ *
+ * ~~~~{.cpp}
+ * #include "calofilter.h"
+ * ~~~~
+ *
  * Your code can then be run like any other program:
  *
  * ~~~~
