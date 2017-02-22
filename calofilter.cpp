@@ -47,8 +47,8 @@
  * ~~~~
  *
  * Notice that we didn't get the @c TTree from the file. The whole point of
- * @c towertset is to wrap the low-level tree into a higher-level interface. This
- * way, the tree contents can be changed at will without breaking the API.
+ * @c towertset is to wrap the low-level tree into a higher-level interface.
+ * This way, the tree contents can be changed at will without breaking the API.
  *
  * @subsection Iteration Iterating over events
  *
