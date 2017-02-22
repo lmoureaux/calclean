@@ -1,5 +1,5 @@
-#ifndef CALOCLEANER_H
-#define CALOCLEANER_H
+#ifndef CALOFILTER_H
+#define CALOFILTER_H
 
 #include <cassert>
 #include <iterator>
@@ -440,4 +440,4 @@ towerset::iterator towerset::end() const
 
 } // namespace calo
 
-#endif // CALOCLEANER_H
+#endif // CALOFILTER_H
