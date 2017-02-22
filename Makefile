@@ -5,11 +5,14 @@ all: test
 clean:
 	$(RM) *.o
 
-CXXFLAGS = -pedantic -Wextra -Wall `root-config --cflags`
-LDFLAGS = `root-config --libs`
+CXXFLAGS := -pedantic -Wextra -Wall `root-config --cflags` $(CXXFLAGS)
+LDFLAGS := `root-config --libs` $(LDFLAGS)
 
-test: test.o calofilter.o
-	$(CXX) $(CXXFLAGS) test.o calofilter.o -o test $(LDFLAGS)
+libcalofilter.a: calofilter.o calofilter.h
+	$(AR) rcs libcalofilter.a calofilter.o
+
+test: test.o libcalofilter.a
+	$(CXX) $(CXXFLAGS) test.o libcalofilter.a -o test $(LDFLAGS)
 
 doc: doc/latex/refman.pdf
 
