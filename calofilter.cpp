@@ -7,6 +7,136 @@
 #include <TDirectory.h>
 #include <TTree.h>
 
+/**
+ * @mainpage Quick Start Guide
+ * @tableofcontents
+ *
+ * This library is a small framework to deal with hits (towers) in the CMS
+ * calorimeters. The API is based on C++ iterators, a concept from the @c C++
+ * standard template library (@c stl) that proved very successful. Iterators are
+ * a kind of generalized pointers and are used to iterate over collections of
+ * similar objects.
+ *
+ * @section Guide The Guide
+ *
+ * @subsection Import Importing the library
+ *
+ * The easiest way to import the library is by including the @c .cpp file:
+ *
+ * ~~~~{.cpp}
+ * #include "calofilter.cpp"
+ * ~~~~
+ *
+ * It is convenient to import the whole library into the global namespace:
+ *
+ * ~~~~{.cpp}
+ * using namespace calo;
+ * ~~~~
+ *
+ * Cleaner ways to get the same result are discussed @ref Compiled "below".
+ *
+ * @subsection Set Making a set
+ *
+ * The central class is @ref calo::towerset. It fetches information from a ROOT
+ * tree and turns it into a nice form. If you have a file that contains the
+ * @c CaloTree, you can declare a @c towerset as follows:
+ *
+ * ~~~~{.cpp}
+ * TFile *file = new TFile("/path/to/your/file.root", "READ");
+ * towerset tset(file);
+ * ~~~~
+ *
+ * Notice that we didn't get the @c TTree from the file. The whole point of
+ * @c towertset is to wrap the low-level tree into a higher-level interface. This
+ * way, the tree contents can be changed at will without breaking the API.
+ *
+ * @subsection Iteration Iterating over events
+ *
+ * This is done in a fashion very similar to what @c TTree does:
+ *
+ * ~~~~{.cpp}
+ * // For each event
+ * unsigned long count = tset.entries();
+ * for (unsigned long entry = 0; entry < count; ++entry) {
+ *   tset.getentry(entry);
+ *   // ...
+ * }
+ * ~~~~
+ *
+ * @subsection Hits Getting the hits
+ *
+ * You may want to loop over all hits:
+ *
+ * ~~~~{.cpp}
+ * // For each tower
+ * const towerset::iterator end = tset.end();
+ * for (const towerset::iterator it = tset.begin(); it != end; ++it) {
+ *   // ...
+ * }
+ * ~~~~
+ *
+ * The @c it object will point to every hit in the event. The easiest way to get
+ * information about a particular tower is to use the @c -> operator:
+ *
+ * ~~~~{.cpp}
+ * bool iseb = it->iseb();
+ * bool emenergy = it->emenergy();
+ * ~~~~
+ *
+ * The full list of supported methods is available in the @ref calo::tower
+ * documentation.
+ *
+ * It is also posible, albeit slower, to use @ref calo::tower objects directly:
+ *
+ * ~~~~{.cpp}
+ * tower t = *it;
+ * bool iseb = t.iseb();
+ * bool emenergy = t.emenergy();
+ * ~~~~
+ *
+ * @section Advanced Advanced topics
+ *
+ * @subsection Compiled Using a compiled version
+ *
+ * On Linux, the library can be compiled to a static library by using the
+ * @c make command. If your analysis code is in a file named @c main.cpp and it
+ * has a @c main() function, you can create an executable using the following
+ * command:
+ *
+ * ~~~~
+ * c++ `root-config --cflags` main.cpp libcalofilter.a -o analysis `root-config --libs`
+ * ~~~~
+ *
+ * Your code can then be run like any other program:
+ *
+ * ~~~~
+ * ./analysis
+ * ~~~~
+ *
+ * Since Cint sometimes happily accepts perfectly invalid code (just like it
+ * rejects some valid constructs), trying to compile a Cint macro will likely
+ * lead to a few compilation errors. Modern compilers, however, print very good
+ * diagnostics, and might even suggest a fix.
+ *
+ * If you think that the command line above is too long, have a look at @c make.
+ * It is a great tool for writing modular code.
+ *
+ * @subsection Cpp11 Simplified syntax with C++11
+ *
+ * The version of C++ published in 2011 has a simplified syntax for looping over
+ * a collection:
+ *
+ * ~~~~{.cpp}
+ * // For each tower
+ * for (auto &tower : tset) {
+ *   // ...
+ * }
+ * ~~~~
+ *
+ * Most modern compilers support this feature (you may have to use
+ * @c -std=c++11). Use it if you can.
+ */
+
 namespace calo {
 
 /// Prints a tower to a stream.
