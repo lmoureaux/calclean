@@ -104,7 +104,7 @@
  * command:
  *
  * ~~~~
- * c++ `root-config --cflags` main.cpp libcalofilter.a -o analysis `root-config --libs`
+ * c++ `root-config --cflags` -O2 main.cpp libcalofilter.a -o analysis `root-config --libs`
  * ~~~~
  *
  * You will then have to include the header file only:
