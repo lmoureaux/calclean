@@ -70,7 +70,7 @@
  * ~~~~{.cpp}
  * // For each tower
  * const towerset::iterator end = tset.end();
- * for (const towerset::iterator it = tset.begin(); it != end; ++it) {
+ * for (towerset::iterator it = tset.begin(); it != end; ++it) {
  *   // ...
  * }
  * ~~~~
