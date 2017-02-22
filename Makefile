@@ -8,6 +8,8 @@ clean:
 CXXFLAGS := -pedantic -Wextra -Wall `root-config --cflags` $(CXXFLAGS)
 LDFLAGS := `root-config --libs` $(LDFLAGS)
 
+calofilter.o: calofilter.cpp calofilter.h
+
 libcalofilter.a: calofilter.o calofilter.h
 	$(AR) rcs libcalofilter.a calofilter.o
 
