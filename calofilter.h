@@ -2,8 +2,8 @@
 #define CALOFILTER_H
 
 #include <cassert>
-#include <iostream>
 #include <iterator>
+#include <vector>
 
 #if __cplusplus < 201103L
 # define nullptr 0
@@ -311,6 +311,35 @@ struct iterator_traits<calo::towerset::iterator>
 
 namespace calo
 {
+
+class goodeb_filter : public filter
+{
+  std::vector<float> _thresholds;
+public:
+  explicit goodeb_filter();
+  explicit goodeb_filter(const std::vector<float> &thresholds);
+
+  bool operator() (const tower_ref &tower) const;
+};
+
+// Needs to be before declaring the static goodeb because of Cint
+/// Constructs a filter with default thresholds
+goodeb_filter::goodeb_filter()
+{
+  _thresholds.push_back(0.36);
+  _thresholds.push_back(0.29);
+  _thresholds.push_back(0.26);
+  _thresholds.push_back(0.24);
+  _thresholds.push_back(0.22);
+}
+
+/// An instance of @ref goodeb_filter using the default parameters.
+/**
+ * @relates goodeb_filter
+ */
+static const goodeb_filter goodeb;
+
+////////////////////////////////////////////////////////////////////////////////
 
 tower::tower(const tower &other) :
   _eta(other.eta()),

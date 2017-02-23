@@ -292,4 +292,56 @@ unsigned long towerset::entries() const
   return _tree->GetEntries();
 }
 
+/**
+ * @class goodeb_filter
+ * @brief A filter that cleans up EB
+ *
+ * This filter implements hot tower and noise removal for the electromagnetic
+ * barrel. A set of default cuts is hard-coded, but can be customized easily.
+ *
+ * The recommended use of this class is through its static instance @ref goodeb.
+ *
+ * ### How the cut works
+ *
+ * Since towers can correspond to groups of several EB crystals, the good
+ * variable is the mean energy per crystal, @f$E/N@f$. Several thresholds are
+ * used depending on the number of crystals; a tower above them is considered
+ * good.
+ *
+ * The default thresholds are:
+ *
+ * Number of crystals | Threshold [GeV/crystal]
+ * :-----------------:|:-----------------------:
+ *          1         |          0.36
+ *          2         |          0.29
+ *          3         |          0.26
+ *          4         |          0.24
+ *         >4         |          0.22
+ */
+
+/// Constructs a filter with the given thresholds
+/**
+ * The vector should contain the thresholds for @f$E_\mathrm{em}/N@f$. The first
+ * element will be used when @f$N = 1@f$; the second when @f$N = 2@f$, and so
+ * on. When no threshold is found in the vector (ie it is too short), the last
+ * element is used.
+ */
+goodeb_filter::goodeb_filter(const std::vector<float> &thresholds) :
+  _thresholds(thresholds)
+{}
+
+bool goodeb_filter::operator() (const tower_ref &tower) const
+{
+  if (tower.iseb()) {
+    int crystals = tower.ebcount();
+    if ((unsigned) crystals < _thresholds.size()) {
+      return tower.emenergy() > _thresholds[crystals - 1] * crystals;
+    } else {
+      return tower.emenergy() > _thresholds.back() * crystals;
+    }
+  } else {
+    return false;
+  }
+}
+
 } // namespace calo
