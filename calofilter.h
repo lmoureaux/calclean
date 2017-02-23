@@ -193,14 +193,7 @@ public:
     int _i;
     tower_ref _t;
 
-    void set(const towerset *set, int index, const filter *filter)
-    {
-      _set = set;
-      _i = index;
-      _t = tower_ref(set, index);
-      _filter = filter;
-      step_forward();
-    }
+    inline void set(const towerset *set, int index, const filter *filter);
 
     inline void step_forward();
     inline void step_backward();
@@ -415,6 +408,18 @@ float tower_ref::totalenergy() const
 {
   assert(_i < _set->_size);
   return _set->_totalenergy[_i];
+}
+
+/// Sets the value pointed to by the iterator
+void towerset::iterator::set(const towerset *set,
+                             int index,
+                             const filter *filter)
+{
+  _set = set;
+  _i = index;
+  _t = tower_ref(set, index);
+  _filter = filter;
+  step_forward();
 }
 
 /// Finds the next good index (current included)
