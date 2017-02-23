@@ -155,6 +155,35 @@ public:
 };
 
 /// Base class for tower filters.
+/**
+ * Custom filters should overload the @c const version of <tt>operator()</tt>,
+ * which should return @c true if the tower passes the filter (ie, it should be
+ * taken into account).
+ *
+ * An example of a simple filter is given below:
+ *
+ * ~~~~{.cpp}
+ * class etafilter : public filter
+ * {
+ * public:
+ *   bool operator() (const tower_ref &tower) const
+ *   {
+ *     // Only keep towers with positive eta
+ *     return tower.eta() > 0;
+ *   }
+ * };
+ * ~~~~
+ *
+ * One would use this filter as follows:
+ *
+ * ~~~~{.cpp}
+ * etafilter filter;
+ * calo::towerset::iterator end = set.end();
+ * for (calo::towerset::iterator it = set.begin(&filter); it != end; ++it) {
+ *   // Do your stuff here
+ * }
+ * ~~~~
+ */
 class filter
 {
 public:
