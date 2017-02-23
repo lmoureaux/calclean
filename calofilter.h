@@ -199,6 +199,7 @@ public:
       _i = index;
       _t = tower_ref(set, index);
       _filter = filter;
+      step_forward();
     }
 
     inline void step_forward();
@@ -419,7 +420,7 @@ float tower_ref::totalenergy() const
 /// Finds the next good index (current included)
 void towerset::iterator::step_forward()
 {
-  filter &f = *_filter;
+  const filter &f = *_filter;
   while (_i < _set->_size && !f(_t)) {
     _t = tower_ref(_set, ++_i);
   }
@@ -428,7 +429,7 @@ void towerset::iterator::step_forward()
 /// Finds the previous good index (current included)
 void towerset::iterator::step_backward()
 {
-  filter &f = *_filter;
+  const filter &f = *_filter;
   while (_i >= 0 && !f(_t)) {
     _t = tower_ref(_set, --_i);
   }
