@@ -435,11 +435,51 @@ unsigned long towerset::entries() const
  *          3         |          0.26
  *          4         |          0.24
  *         >4         |          0.22
+ *
+ * ### Hot cells
+ *
+ * Hot cells are handled by defining logical coordinates for towers as
+ * @f$ i_\eta \equiv \left\lfloor \frac{\eta}{0.085} \right\rfloor @f$ and
+ * @f$ i_\phi \equiv \left\lfloor \frac{36 \phi}{\pi} \right\rfloor @f$. This
+ * corresponds to the groups of 5 by 5 crystals that @c CaloTowers use.
+ *
+ * The filter uses a list of hot cells' logical coordinates to remove them. The
+ * default list is:
+ *
+ *  @f$ i_\eta @f$ | @f$ i_\phi @f$
+ * :--------------:|:--------------:
+ *       -16       |      -36
+ *       -16       |      -35
+ *       -15       |      -35
+ *       -11       |      -35
+ *       -18       |       35
+ *       -17       |       35
+ *       -16       |       35
+ *       -15       |       35
+ *       -10       |       -7
+ *        -9       |        0
+ *         8       |       -8
+ *         2       |       11
+ *         0       |       11
+ *        -6       |       24
+ *       -18       |       31
+ *        11       |       11
+ *        13       |       12
+ *        14       |       12
+ *        14       |       11
+ *        15       |       11
+ *        16       |       11
  */
 
 /// Constructs a filter with the given thresholds
 /**
- * The vector should contain the thresholds for @f$E_\mathrm{em}/N@f$. The first
+ * The first two arguments are vectors containing the position of hot cells. The
+ * first should contain the @f$ i_\eta @f$ logical coordinates, and the second
+ * the corresponding values of @f$ i_\phi @f$. Both vectors must have the same
+ * size.
+ *
+ * The @c thresholds vector should contain the thresholds for
+ * @f$E_\mathrm{em}/N@f$. The first
  * element will be used when @f$N = 1@f$; the second when @f$N = 2@f$, and so
  * on. When no threshold is found in the vector (ie it is too short), the last
  * element is used.
