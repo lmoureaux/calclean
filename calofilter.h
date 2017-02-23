@@ -153,6 +153,14 @@ public:
   inline float totalenergy() const;
 };
 
+/// Base class for tower filters.
+class filter
+{
+public:
+  /// Returns @c true if the tower passes the filter
+  virtual bool operator() (const tower_ref &) const = 0;
+};
+
 /// A collection of all towers in an event.
 class towerset
 {
@@ -174,12 +182,14 @@ public:
     const towerset *_set;
     int _i;
     tower_ref _t;
+    filter *_filter;
 
-    void set(const towerset *set, int index)
+    void set(const towerset *set, int index, filter *filter)
     {
       _set = set;
       _i = index;
       _t = tower_ref(set, index);
+      _filter = filter;
     }
 
   public:
@@ -426,7 +436,7 @@ towerset::iterator towerset::iterator::operator-- (int)
 towerset::iterator towerset::begin() const
 {
   iterator it;
-  it.set(this, 0);
+  it.set(this, 0, nullptr);
   return it;
 }
 
@@ -434,7 +444,7 @@ towerset::iterator towerset::begin() const
 towerset::iterator towerset::end() const
 {
   iterator it;
-  it.set(this, _size);
+  it.set(this, _size, nullptr);
   return it;
 }
 
