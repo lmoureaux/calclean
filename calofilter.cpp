@@ -94,6 +94,55 @@
  * bool emenergy = t.emenergy();
  * ~~~~
  *
+ * @subsection Filtering Filtering
+ *
+ * Filtering towers is done by passing a @ref calo::filter object to
+ * @ref calo::towerset::begin. The resulting iterator will then return towers
+ * that are deemed "good" by the filter.
+ *
+ * Some filters are defined by default; here, we use the @c goodeb to remove
+ * the noise from the barrel of the electromagnetic calorimeter:
+ *
+ * ~~~~{.cpp}
+ * // For each "good" tower in the EB
+ * const towerset::iterator end = tset.end();
+ * for (towerset::iterator it = tset.begin(&goodeb); it != end; ++it) {
+ *   // ...
+ * }
+ * ~~~~
+ *
+ * @subsection Counting Counting
+ *
+ * You may just be interested in whether there are towers, not in their
+ * individual properties. In this case, the shortest code you can write is the
+ * following:
+ *
+ * ~~~~{.cpp}
+ * bool is_there_a_tower = (tset.begin() != tset.end());
+ * ~~~~
+ *
+ * Notice that we used the same @c begin function as for loops. It is therefore
+ * straighforward to require, for example, that there is no good EB tower:
+ *
+ * ~~~~{.cpp}
+ * bool is_there_a_tower = (tset.begin(&goodeb) != tset.end());
+ * ~~~~
+ *
+ * Another common operation is to count how many towers there are. @c C++
+ * defines a function that does just that, @c std::distance. It is used as
+ * follows:
+ *
+ * ~~~~{.cpp}
+ * int count = std::distance(tset.begin(), tset.end());
+ * ~~~~
+ *
+ * By now, you should have understood that, if you pass a filter to
+ * <tt>begin()</tt>, you will get the number of towers that pass the filter.
+ *
+ * Unfortunately, not all ROOT versions support @c std::distance. If yours
+ * doesn't, you can use a plain old loop. (Or better: define your own
+ * @c distance function.)
+ *
  * @section Advanced Advanced topics
  *
  * @subsection Compiled Using a compiled version
