@@ -8,6 +8,11 @@
 # include "calofilter.cpp"
 #endif
 
+class test_filter : public calo::filter
+{
+  bool operator() (const calo::tower_ref &t) const { return t.eta() > 0; }
+};
+
 int main()
 {
   std::cout << "Running..." << std::endl;
@@ -18,8 +23,10 @@ int main()
   calo::towerset set;
   set.getentry(0);
 
+  test_filter filter;
+
   calo::towerset::iterator end = set.end();
-  for (calo::towerset::iterator it = set.begin(); it != end; ++it) {
+  for (calo::towerset::iterator it = set.begin(&filter); it != end; ++it) {
     std::cout << *it << " -> " << it->ebcount() << std::endl;
   }
 
