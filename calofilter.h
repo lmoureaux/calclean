@@ -166,6 +166,15 @@ class towerset
 {
   friend class tower_ref;
 
+  /// A filter that every tower passes
+  class nofilter : public filter
+  {
+  public:
+    bool operator() (const tower_ref &) const { return true; }
+    static nofilter instance;
+  };
+
+
 public:
   /// Iterator over towers in a @ref towerset
   /**
@@ -182,15 +191,18 @@ public:
     const towerset *_set;
     int _i;
     tower_ref _t;
-    filter *_filter;
+    const filter *_filter;
 
-    void set(const towerset *set, int index, filter *filter)
+    void set(const towerset *set, int index, const filter *filter)
     {
       _set = set;
       _i = index;
       _t = tower_ref(set, index);
       _filter = filter;
     }
+
+    inline void step_forward();
+    inline void step_backward();
 
   public:
     /// Access the tower referenced by the iterator
@@ -402,10 +414,27 @@ float tower_ref::totalenergy() const
   return _set->_totalenergy[_i];
 }
 
+/// Finds the next good index (current included)
+void towerset::iterator::step_forward()
+{
+  while (_i < _set->_size && !(*_filter)(_t)) {
+    _t = tower_ref(_set, ++_i);
+  }
+}
+
+/// Finds the previous good index (current included)
+void towerset::iterator::step_backward()
+{
+  while (_i >= 0 && !(*_filter)(_t)) {
+    _t = tower_ref(_set, --_i);
+  }
+}
+
 /// Prefix increment operator
 towerset::iterator &towerset::iterator::operator++ ()
 {
   _t = tower_ref(_set, ++_i);
+  step_forward();
   return *this;
 }
 
@@ -436,7 +465,7 @@ towerset::iterator towerset::iterator::operator-- (int)
 towerset::iterator towerset::begin() const
 {
   iterator it;
-  it.set(this, 0, nullptr);
+  it.set(this, 0, &nofilter::instance);
   return it;
 }
 
@@ -444,7 +473,7 @@ towerset::iterator towerset::begin() const
 towerset::iterator towerset::end() const
 {
   iterator it;
-  it.set(this, _size, nullptr);
+  it.set(this, _size, &nofilter::instance);
   return it;
 }
 
