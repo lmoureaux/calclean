@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iterator>
 #include <TFile.h>
 
 #include "calofilter.h"
@@ -29,6 +30,12 @@ int main()
   for (calo::towerset::iterator it = set.begin(&filter); it != end; ++it) {
     std::cout << *it << " -> " << it->ebcount() << std::endl;
   }
+
+// ROOT's pseudo-C++ parser doesn't support std::distance
+#ifdef __CINT__
+  std::cout << "There were " << std::distance(set.begin(&filter), set.end())
+            << " towers passing the filter." << std::endl;
+#endif
 
   std::cout << "Finished!" << std::endl;
   return 0;
