@@ -33,6 +33,9 @@
  * using namespace calo;
  * ~~~~
  *
+ * All examples below assume that you imported the full namespace. If you don't
+ * want to do it, add @c calo:: before all class names.
+ *
  * Cleaner ways to get the same result are discussed @ref Compiled "below".
  *
  * @subsection Set Making a set
@@ -145,6 +148,65 @@
  * @c distance function.)
  *
  * @section Advanced Advanced topics
+ *
+ * @subsection OwnFilters Defining your own filters
+ *
+ * If you want to define a new filter, the easiest way is to start from an
+ * existing one and change only what's needed. In this section, you will learn
+ * how to build a new one from scratch.
+ *
+ * For the sake of the example, we will define a filter that selects towers
+ * with @f$|\eta| < \eta_\mathrm{max}@f$. We start by creating a new class
+ * derived from @ref calo::filter (put it between @c #includes and your first
+ * function):
+ *
+ * ~~~~{.cpp}
+ * class example_filter : public filter
+ * {
+ * public:
+ * ~~~~
+ *
+ * Since this is an example, we won't use proper encapsulation. We define a
+ * variable for @f$\eta_\mathrm{max}@f$ and a simple constructor:
+ *
+ * ~~~~{.cpp}
+ *   float etamax;
+ *   explicit example_filter(float etamax) : etamax(etamax) {}
+ * ~~~~
+ *
+ * The actual filtering happens in <tt>operator()</tt>:
+ *
+ * ~~~~{.cpp}
+ *   bool operator() (const tower_ref &tower) const
+ *   {
+ *     return std::abs(tower.eta()) < etamax;
+ *   }
+ * ~~~~
+ *
+ * Note that the signature of that function should be exactly as above (you can
+ * only change the name of the argument). In particular, the @c const keyword
+ * is important.
+ *
+ * That's all we need, so we can end the class here:
+ *
+ * ~~~~{.cpp}
+ * }; // Don't forget the semicolon
+ * ~~~~
+ *
+ * Before we can use our filter, we need to create a variable of that type:
+ *
+ * ~~~~{.cpp}
+ * example_filter exfilter(2.0); // Sets etamax to 2.0
+ * ~~~~
+ *
+ * Using it is then simple done as usual:
+ *
+ * ~~~~{.cpp}
+ * const towerset::iterator end = tset.end();
+ * for (towerset::iterator it = tset.begin(&exfilter); it != end; ++it) {
+ *   // ...
+ * }
+ * ~~~~
  *
  * @subsection Compiled Using a compiled version
  *
