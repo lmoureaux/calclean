@@ -9,11 +9,6 @@
 # include "calofilter.cpp"
 #endif
 
-class test_filter : public calo::filter
-{
-  bool operator() (const calo::tower_ref &t) const { return t.eta() > 0; }
-};
-
 int main()
 {
   std::cout << "Running..." << std::endl;
@@ -22,20 +17,22 @@ int main()
   in->cd();
 
   calo::towerset set;
-  set.getentry(0);
+  for (long entry = 0; entry < 100; ++entry) {
+    set.getentry(entry);
 
-  test_filter filter;
-
-  calo::towerset::iterator end = set.end();
-  for (calo::towerset::iterator it = set.begin(&filter); it != end; ++it) {
-    std::cout << *it << " -> " << it->ebcount() << std::endl;
-  }
+    calo::towerset::iterator end = set.end();
+    for (calo::towerset::iterator it = set.begin(&calo::goodeb);
+         it != end; ++it) {
+      std::cout << *it << " -> " << it->ebcount() << std::endl;
+    }
 
 // ROOT's pseudo-C++ parser doesn't support std::distance
 #ifndef __CINT__
-  std::cout << "There were " << std::distance(set.begin(&filter), set.end())
-            << " towers passing the filter." << std::endl;
+    std::cout << "There were "
+              << std::distance(set.begin(&calo::goodeb), set.end())
+              << " towers passing the filter." << std::endl;
 #endif
+  }
 
   std::cout << "Finished!" << std::endl;
   return 0;
