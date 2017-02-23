@@ -472,6 +472,11 @@ towerset::iterator towerset::iterator::operator-- (int)
 }
 
 /// Returns an iterator referencing the first tower
+/**
+ * If @c filter is given, the resulting object will iterate only over towers for
+ * which <tt>filter()</tt> returns @c true, else it will iterate over all
+ * towers.
+ */
 towerset::iterator towerset::begin(const filter *filter) const
 {
   if (filter == nullptr) {
