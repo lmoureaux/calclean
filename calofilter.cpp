@@ -145,8 +145,6 @@
 
 namespace calo {
 
-towerset::nofilter towerset::nofilter::instance;
-
 /// Prints a tower to a stream.
 /**
  * @warning

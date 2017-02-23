@@ -2,6 +2,7 @@
 #define CALOFILTER_H
 
 #include <cassert>
+#include <iostream>
 #include <iterator>
 
 #if __cplusplus < 201103L
@@ -166,14 +167,13 @@ class towerset
 {
   friend class tower_ref;
 
-  /// A filter that every tower passes
+  /// A filter that lets every tower pass
   class nofilter : public filter
   {
   public:
+    /// Returns @c true
     bool operator() (const tower_ref &) const { return true; }
-    static nofilter instance;
   };
-
 
 public:
   /// Iterator over towers in a @ref towerset
@@ -189,9 +189,9 @@ public:
     friend class towerset;
 
     const towerset *_set;
+    const filter *_filter;
     int _i;
     tower_ref _t;
-    const filter *_filter;
 
     void set(const towerset *set, int index, const filter *filter)
     {
@@ -228,6 +228,8 @@ private:
 
   TTree *_tree;
 
+  nofilter _nofilter; // ROOT doesn't work well with static variables
+
   int _size;
 
   float _eta[big];
@@ -254,7 +256,7 @@ public:
   void getentry(unsigned long entry);
   unsigned long entries() const;
 
-  inline iterator begin() const;
+  inline iterator begin(const filter *filter = nullptr) const;
   inline iterator end() const;
 };
 
@@ -462,10 +464,13 @@ towerset::iterator towerset::iterator::operator-- (int)
 }
 
 /// Returns an iterator referencing the first tower
-towerset::iterator towerset::begin() const
+towerset::iterator towerset::begin(const filter *filter) const
 {
+  if (filter == nullptr) {
+    filter = &_nofilter;
+  }
   iterator it;
-  it.set(this, 0, &nofilter::instance);
+  it.set(this, 0, filter);
   return it;
 }
 
@@ -473,7 +478,7 @@ towerset::iterator towerset::begin() const
 towerset::iterator towerset::end() const
 {
   iterator it;
-  it.set(this, _size, &nofilter::instance);
+  it.set(this, _size, &_nofilter);
   return it;
 }
 
