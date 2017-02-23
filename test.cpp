@@ -32,7 +32,7 @@ int main()
   }
 
 // ROOT's pseudo-C++ parser doesn't support std::distance
-#ifdef __CINT__
+#ifndef __CINT__
   std::cout << "There were " << std::distance(set.begin(&filter), set.end())
             << " towers passing the filter." << std::endl;
 #endif
