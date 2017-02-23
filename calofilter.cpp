@@ -97,11 +97,12 @@
  * @subsection Filtering Filtering
  *
  * Filtering towers is done by passing a @ref calo::filter object to
- * @ref calo::towerset::begin. The resulting iterator will then return towers
- * that are deemed "good" by the filter.
+ * @ref calo::towerset::begin "begin". The resulting iterator will then return
+ * towers that are deemed "good" by the filter.
  *
- * Some filters are defined by default; here, we use the @c goodeb to remove
- * the noise from the barrel of the electromagnetic calorimeter:
+ * Some filters are defined by default; here, we use @ref calo::goodeb_filter
+ * "goodeb" to remove the noise from the barrel of the electromagnetic
+ * calorimeter:
  *
  * ~~~~{.cpp}
  * // For each "good" tower in the EB
