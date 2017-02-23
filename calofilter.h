@@ -302,7 +302,7 @@ struct iterator_traits<calo::towerset::iterator>
   typedef calo::tower_ref value_type;
   typedef calo::tower_ref *pointer;
   typedef calo::tower_ref &reference;
-  typedef std::bidirectional_iterator_tag iterator_setategory;
+  typedef std::bidirectional_iterator_tag iterator_category;
 };
 
 } // namespace std
@@ -316,7 +316,7 @@ class goodeb_filter : public filter
 {
   std::vector<float> _thresholds;
 public:
-  explicit goodeb_filter();
+  explicit inline goodeb_filter();
   explicit goodeb_filter(const std::vector<float> &thresholds);
 
   bool operator() (const tower_ref &tower) const;
