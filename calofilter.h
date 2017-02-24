@@ -1,6 +1,13 @@
 #ifndef CALOFILTER_H
 #define CALOFILTER_H
 
+/**
+ * @file
+ * @brief  Header for the whole framework
+ * @author Louis Moureaux
+ * @date   2017
+ */
+
 #include <cassert>
 #include <iterator>
 #include <vector>

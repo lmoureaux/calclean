@@ -1,3 +1,10 @@
+/**
+ * @file
+ * @brief  Source for the whole framework
+ * @author Louis Moureaux
+ * @date   2017
+ */
+
 #include "calofilter.h"
 
 #include <cmath>
@@ -10,6 +17,7 @@
 
 // At least ROOT doesn't define it in cmath
 #ifndef M_PI
+/// A macro for @f$ \pi @f$ (not all @c cmath headers define it)
 # define M_PI 3.141592653589793238462643383279502884
 #endif
 

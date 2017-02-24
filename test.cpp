@@ -1,3 +1,10 @@
+/**
+ * @file
+ * @brief  Test file (but also an example for the API
+ * @author Louis Moureaux
+ * @date   2017
+ */
+
 #include <iostream>
 #include <iterator>
 #include <TFile.h>
