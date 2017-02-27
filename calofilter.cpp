@@ -418,6 +418,38 @@ unsigned long towerset::entries() const
   return _tree->GetEntries();
 }
 
+/// Constructs a filter for the given hot cells
+/**
+ * The first two arguments are vectors containing the position of hot cells. The
+ * first should contain the @f$ i_\eta @f$ logical coordinates, and the second
+ * the corresponding values of @f$ i_\phi @f$. Both vectors must have the same
+ * size.
+ */
+coldeb_filter::coldeb_filter(const std::vector<int> &hotcells_eta,
+                             const std::vector<int> &hotcells_phi) :
+  _hotcells_eta(hotcells_eta),
+  _hotcells_phi(hotcells_phi)
+{
+  assert(_hotcells_eta.size() == _hotcells_phi.size());
+}
+
+bool coldeb_filter::operator() (const tower_ref &tower) const
+{
+  if (tower.iseb()) {
+    // Remove hot cells
+    int ieta = std::floor(tower.eta() / 0.085);
+    int iphi = std::floor(tower.phi() / M_PI * 36);
+    for (unsigned i = 0; i < _hotcells_eta.size(); ++i) {
+      if (ieta == _hotcells_eta[i] && iphi == _hotcells_phi[i]) {
+        return false;
+      }
+    }
+    return true;
+  } else {
+    return false;
+  }
+}
+
 /**
  * @class goodeb_filter
  * @brief A filter that cleans up EB
