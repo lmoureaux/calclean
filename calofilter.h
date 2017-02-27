@@ -247,10 +247,10 @@ public:
     inline iterator operator-- (int);
 
     /// Compares two iterators for equality
-    bool operator== (const iterator &other) { return _t == other._t; }
+    bool operator== (const iterator &other) const { return _t == other._t; }
 
     /// Compares two iterators for inequality
-    bool operator!= (const iterator &other) { return !(*this == other); }
+    bool operator!= (const iterator &other) const { return !(*this == other); }
   };
 
 private:
