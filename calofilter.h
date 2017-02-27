@@ -362,6 +362,7 @@ goodeb_filter::goodeb_filter()
   _hotcells_eta.push_back(-16); _hotcells_phi.push_back( 35);
   _hotcells_eta.push_back(-15); _hotcells_phi.push_back( 35);
 
+  _hotcells_eta.push_back(-17); _hotcells_phi.push_back(-11);
   _hotcells_eta.push_back(-10); _hotcells_phi.push_back( -7);
 
   _hotcells_eta.push_back( -9); _hotcells_phi.push_back(  0);

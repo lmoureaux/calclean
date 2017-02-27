@@ -464,6 +464,7 @@ unsigned long towerset::entries() const
  *       -17       |       35
  *       -16       |       35
  *       -15       |       35
+ *       -17       |      -11
  *       -10       |       -7
  *        -9       |        0
  *         8       |       -8
