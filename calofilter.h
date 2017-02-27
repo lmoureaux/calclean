@@ -319,6 +319,15 @@ struct iterator_traits<calo::towerset::iterator>
 namespace calo
 {
 
+/// Filters EB towers.
+class eb_filter : public filter
+{
+public:
+  bool operator() (const tower_ref &tower) const { return tower.iseb(); }
+};
+
+const eb_filter eb;
+
 class goodeb_filter : public filter
 {
   std::vector<int> _hotcells_eta;
