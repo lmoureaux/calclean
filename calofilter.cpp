@@ -117,9 +117,15 @@
  * @ref calo::towerset::begin "begin". The resulting iterator will then return
  * towers that are deemed "good" by the filter.
  *
- * Some filters are defined by default; here, we use @ref calo::goodeb_filter
- * "goodeb" to remove the noise from the barrel of the electromagnetic
- * calorimeter:
+ * Some filters are defined by default; here, we will use
+ * @ref calo::goodeb_filter "goodeb" to remove the noise from the barrel of the
+ * electromagnetic calorimeter. First, we need to @c #include the EB filters:
+ *
+ * ~~~~{.cpp}
+ * #include "eb.cpp" // .h if linking to the static library
+ * ~~~~
+ *
+ * We may then use @c goodeb in our loop statement:
  *
  * ~~~~{.cpp}
  * // For each "good" tower in the EB

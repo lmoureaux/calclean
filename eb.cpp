@@ -16,8 +16,9 @@ namespace calo {
  * @brief Filters for ECAL Barrel towers.
  *
  * This module contains various filters related to the ECAL Barrel. The most
- * basic is @ref eb, which returns all EB towers. The @ref coldeb filter is
- * designed to remove hot cells; and @ref goodeb defines energy thresholds.
+ * basic is @ref eb_filter "eb", which returns all EB towers. The
+ * @ref coldeb_filter "coldeb" filter is designed to remove hot cells; and
+ * @ref goodeb_filter "goodeb" defines energy thresholds.
  */
 
 /**

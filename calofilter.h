@@ -13,11 +13,13 @@
 #include <vector>
 
 #if __cplusplus < 201103L
+/// A constant for @c NULL pointers
 # define nullptr 0
 #endif
 
 // ROOT's pseudo-C++ parser
 #ifdef __CINT__
+/// A constant for @c NULL pointers
 # define nullptr 0
 #endif
 

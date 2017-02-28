@@ -18,6 +18,10 @@ public:
   bool operator() (const tower_ref &tower) const { return tower.iseb(); }
 };
 
+/// An instance of @ref eb_filter.
+/**
+ * @relates eb_filter
+ */
 const eb_filter eb;
 
 class coldeb_filter : public filter
