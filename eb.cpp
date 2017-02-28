@@ -127,10 +127,11 @@ bool coldeb_filter::operator() (const tower_ref &tower) const
  *
  * Number of crystals | Threshold [GeV/crystal]
  * :-----------------:|:-----------------------:
- *          1         |          0.37
- *          2         |          0.28
- *          3         |          0.25
- *         >3         |          0.22
+ *          1         |          0.36
+ *          2         |          0.29
+ *          3         |          0.26
+ *          4         |          0.24
+ *         >4         |          0.22
  *
  * ### Hot towers
  *
