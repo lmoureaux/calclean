@@ -132,15 +132,18 @@ bool coldeb_filter::operator() (const tower_ref &tower) const
  *          4         |          0.24
  *         >4         |          0.22
  *
- * @ingroup eb
+ * ### Hot towers
+ *
+ * @c goodeb_filter uses @ref coldeb_filter internally. See the documentation of
+ * this class for more information.
+ *
+ * @ingroup EB
  */
 
 /// Constructs a filter with the given thresholds
 /**
- * The first two arguments are vectors containing the position of hot cells. The
- * first should contain the @f$ i_\eta @f$ logical coordinates, and the second
- * the corresponding values of @f$ i_\phi @f$. Both vectors must have the same
- * size.
+ * The first two arguments are vectors containing the position of hot cells; see
+ * @ref coldeb_filter for more information.
  *
  * The @c thresholds vector should contain the thresholds for
  * @f$E_\mathrm{em}/N@f$. The first
@@ -151,24 +154,13 @@ bool coldeb_filter::operator() (const tower_ref &tower) const
 goodeb_filter::goodeb_filter(const std::vector<int> &hotcells_eta,
                              const std::vector<int> &hotcells_phi,
                              const std::vector<float> &thresholds) :
-  _hotcells_eta(hotcells_eta),
-  _hotcells_phi(hotcells_phi),
+  _cold(hotcells_eta, hotcells_phi),
   _thresholds(thresholds)
-{
-  assert(_hotcells_eta.size() == _hotcells_phi.size());
-}
+{}
 
 bool goodeb_filter::operator() (const tower_ref &tower) const
 {
-  if (tower.iseb()) {
-    // Remove hot cells
-    int ieta = std::floor(tower.eta() / 0.085);
-    int iphi = std::floor(tower.phi() / M_PI * 36);
-    for (unsigned i = 0; i < _hotcells_eta.size(); ++i) {
-      if (ieta == _hotcells_eta[i] && iphi == _hotcells_phi[i]) {
-        return false;
-      }
-    }
+  if (tower.iseb() && _cold(tower)) {
     // Filter energy
     int crystals = tower.ebcount();
     if ((unsigned) crystals < _thresholds.size()) {
