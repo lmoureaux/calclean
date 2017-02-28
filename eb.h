@@ -94,9 +94,10 @@ public:
 /// Constructs a filter with default parameters
 goodeb_filter::goodeb_filter()
 {
-  _thresholds.push_back(0.37);
-  _thresholds.push_back(0.28);
-  _thresholds.push_back(0.25);
+  _thresholds.push_back(0.36);
+  _thresholds.push_back(0.29);
+  _thresholds.push_back(0.26);
+  _thresholds.push_back(0.24);
   _thresholds.push_back(0.22);
 }
 
