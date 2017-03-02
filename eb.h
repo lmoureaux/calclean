@@ -15,6 +15,8 @@ namespace calo {
 class eb_filter : public filter
 {
 public:
+  eb_filter() {}
+
   bool operator() (const tower_ref &tower) const { return tower.iseb(); }
 };
 

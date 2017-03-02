@@ -10,10 +10,12 @@
 #include <TFile.h>
 
 #include "calofilter.h"
+#include "eb.h"
 
 // ROOT's pseudo-C++ parser
 #ifdef __CINT__
 # include "calofilter.cpp"
+# include "eb.cpp"
 #endif
 
 int main()
