@@ -5,6 +5,7 @@
  * @date   2017
  */
 
+#include <cstring> // strerror
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
@@ -36,6 +37,8 @@ public:
   /// Returns the target number of hot cells for the given eta bin.
   double numhot(int ieta) const { return _numhot[ieta + ETA_DIVS / 2]; }
 };
+
+void analyze(const config &c, calo::towerset &tset);
 
 /// Entry point for the program.
 int main(int argc, char *argv[])
@@ -70,19 +73,27 @@ int main(int argc, char *argv[])
     std::exit(1);
   }
 
-  for (int ieta = -ETA_DIVS / 2; ieta < ETA_DIVS / 2; ++ieta) {
-    std::cout << ieta << " " << c->numhot(ieta) << std::endl;
-  }
-
   TFile *in = new TFile(argv[2], "READ");
-  if (in->GetErrno() != 0) {
-    // TFile prints its own error message
+  if (!in->IsOpen()) {
+    std::cerr << "Error: could not open '" << argv[2] << "': "
+              << std::strerror(in->GetErrno()) << std::endl;
     std::exit(1);
   }
   in->cd();
 
+  try {
+    calo::towerset tset;
+    analyze(*c, tset);
+  } catch (std::exception &e) {
+    std::cerr << "Error: " << e.what() << std::endl;
+  } catch (...) {
+    std::cerr << "Error: Unexpected exception" << std::endl;
+  }
+
   return 0;
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 /// Prints a short help message.
 void printusage(const char *progname)
@@ -186,4 +197,35 @@ long config::strtol(int linenb, const std::string &word) const
     throw std::runtime_error(errmsg(linenb, msg.str()));
   }
   return ret;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+/// Small struct for HB hits
+struct hit
+{
+  float eta, phi, hadenergy;
+
+  /// All hits
+  static std::vector<hit> all;
+};
+std::vector<hit> hit::all;
+
+void analyze(const config &c, calo::towerset &tset)
+{
+  // Load all hits into hit::all (for optimization)
+  hit::all.reserve(100000);
+  calo::hb_filter hb;
+  for (unsigned long entry = 0; entry < tset.entries(); ++entry) {
+    tset.getentry(entry);
+
+    calo::towerset::iterator end = tset.end();
+    for (calo::towerset::iterator it = tset.begin(&hb); it != end; ++it) {
+      hit h;
+      h.eta = it->eta();
+      h.phi = it->phi();
+      h.hadenergy = it->hadenergy();
+      hit::all.push_back(h);
+    }
+  }
 }
