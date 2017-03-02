@@ -1,11 +1,12 @@
 
-.PHONY: all clean doc
+.PHONY: all clean doc tools
 
-all: test
+all: test tools
 clean:
 	$(RM) *.o
 	$(RM) -r doc/html
 
+CXXFLAGS := -I. $(CXXFLAGS)
 CXXFLAGS := -pedantic -Wextra -Wall `root-config --cflags` $(CXXFLAGS)
 LDFLAGS := `root-config --libs` $(LDFLAGS)
 
@@ -19,7 +20,12 @@ libcalofilter.a: calofilter.o calofilter.h eb.o hb.o
 test: test.o libcalofilter.a
 	$(CXX) $(CXXFLAGS) test.o libcalofilter.a -o test $(LDFLAGS)
 
+tools: tools/hbanalyzer
+
+tools/hbanalyzer: tools/hbanalyzer.o libcalofilter.a
+	$(CXX) $(CXXFLAGS) tools/hbanalyzer.o libcalofilter.a -o tools/hbanalyzer $(LDFLAGS)
+
 doc: doc/html/index.html
 
-doc/html/index.html: *.h *.cpp
+doc/html/index.html: *.h *.cpp tools/*.cpp
 	doxygen
