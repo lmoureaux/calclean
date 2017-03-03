@@ -19,7 +19,7 @@
 #include "hb.h"
 
 /// The number of bins in @f$\eta@f$.
-const int ETA_DIVS = 34;
+const int ETA_DIVS = 32;
 /// The number of bins in @f$\phi@f$.
 const int PHI_DIVS = 360 / 5;
 
@@ -88,26 +88,31 @@ int main(int argc, char *argv[])
       std::exit(1);
     }
   }
-  config c(pvalue, 0);
-
-  results *r;
-  try {
-    calo::towerset tset;
-    r = new results(c, tset);
-  } catch (std::exception &e) {
-    std::cerr << "Error: " << e.what() << std::endl;
-  } catch (...) {
-    std::cerr << "Error: Unexpected exception" << std::endl;
-  }
 
   std::cout << "return {" << std::endl;
-  for (int ieta = -ETA_DIVS / 2; ieta < ETA_DIVS / 2; ++ieta) {
-    std::vector<int> ignored = r->hotcells(ieta);
-    std::cout << "  [" << ieta << "] = { energy = " << r->energy(ieta) << ", ";
-    for (unsigned iphi = 0; iphi < ignored.size(); ++iphi) {
-      std::cout << ignored[iphi] << ", ";
+  for (int numhot = 0; numhot < 20; ++numhot) {
+    config c(pvalue, numhot);
+
+    results *r;
+    try {
+      calo::towerset tset;
+      r = new results(c, tset);
+    } catch (std::exception &e) {
+      std::cerr << "Error: " << e.what() << std::endl;
+    } catch (...) {
+      std::cerr << "Error: Unexpected exception" << std::endl;
     }
-    std::cout << "}," << std::endl;
+
+    std::cout << "  [" << numhot << "] = {" << std::endl;
+    for (int ieta = -ETA_DIVS / 2; ieta < ETA_DIVS / 2; ++ieta) {
+      std::vector<int> ignored = r->hotcells(ieta);
+      std::cout << "    [" << ieta << "] = { energy = " << r->energy(ieta) << ", ";
+      for (unsigned iphi = 0; iphi < ignored.size(); ++iphi) {
+        std::cout << ignored[iphi] << ", ";
+      }
+      std::cout << "}," << std::endl;
+    }
+    std::cout << "  }," << std::endl;
   }
   std::cout << "}" << std::endl;
 
@@ -158,19 +163,21 @@ struct cost_function
 
 results::results(const config &c, calo::towerset &tset)
 {
-  // Load all hits into hit::all (for optimization)
-  hit::all.reserve(100000);
-  calo::hb_filter hb;
-  for (unsigned long entry = 0; entry < tset.entries(); ++entry) {
-    tset.getentry(entry);
+  if (hit::all.size() == 0) {
+    // Load all hits into hit::all (for optimization)
+    hit::all.reserve(100000);
+    calo::hb_filter hb;
+    for (unsigned long entry = 0; entry < tset.entries(); ++entry) {
+      tset.getentry(entry);
 
-    calo::towerset::iterator end = tset.end();
-    for (calo::towerset::iterator it = tset.begin(&hb); it != end; ++it) {
-      hit h;
-      h.eta = it->eta();
-      h.phi = it->phi();
-      h.hadenergy = it->hadenergy();
-      hit::all.push_back(h);
+      calo::towerset::iterator end = tset.end();
+      for (calo::towerset::iterator it = tset.begin(&hb); it != end; ++it) {
+        hit h;
+        h.eta = it->eta();
+        h.phi = it->phi();
+        h.hadenergy = it->hadenergy();
+        hit::all.push_back(h);
+      }
     }
   }
 
@@ -185,7 +192,7 @@ results::results(const config &c, calo::towerset &tset)
     cost.pvalue = c.pvalue();
     cost.numhot = c.numhot();
 
-    int status = rootfinder.Solve(cost, 0, 10, 500, 1e-4, 1e-4);
+    int status = rootfinder.Solve(cost, 0, 15, 100, 1e-4, 1e-4);
     if (status != 1) {
       std::cerr << "Error: Optimization failled for ieta=" << ieta << std::endl;
       std::exit(2);
