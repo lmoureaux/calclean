@@ -99,8 +99,10 @@ int main(int argc, char *argv[])
       r = new results(c, tset);
     } catch (std::exception &e) {
       std::cerr << "Error: " << e.what() << std::endl;
+      std::exit(1);
     } catch (...) {
       std::cerr << "Error: Unexpected exception" << std::endl;
+      std::exit(1);
     }
 
     std::cout << "  [" << numhot << "] = {" << std::endl;
@@ -201,7 +203,7 @@ results::results(const config &c, calo::towerset &tset)
 
     std::vector<int> ignored = cost.getignored(energy);
     for (unsigned i = 0; i < ignored.size(); ++i) {
-      ignored[i] -= PHI_DIVS / 2;
+      ignored[i] -= PHI_DIVS / 2 + 1;
     }
 
     _energies[ieta + ETA_DIVS / 2] = energy;
