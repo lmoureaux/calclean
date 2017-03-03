@@ -12,13 +12,18 @@
 #include <sstream>
 #include <string>
 
+#include <Math/RootFinder.h>
+#include <TH1D.h>
 #include <TFile.h>
+#include <TMath.h>
 
 #include "calofilter.h"
 #include "hb.h"
 
 /// The number of bins in @f$\eta@f$.
 const int ETA_DIVS = 34;
+/// The number of bins in @f$\phi@f$.
+const int PHI_DIVS = 360 / 5;
 
 void printusage(const char *progname);
 
@@ -38,7 +43,19 @@ public:
   double numhot(int ieta) const { return _numhot[ieta + ETA_DIVS / 2]; }
 };
 
-void analyze(const config &c, calo::towerset &tset);
+/// Holds the results.
+class results
+{
+  double _energies[ETA_DIVS];
+  std::vector<int> _hotcells[ETA_DIVS];
+public:
+  explicit results(const config &c, calo::towerset &tset);
+  /// Returns the threshold energy for the given @c ieta.
+  double energy(int ieta) const { return _energies[ieta + ETA_DIVS / 2]; }
+  /// Returns the hot cells for the given @c ieta.
+  std::vector<int> hotcells(int ieta) const
+  { return _hotcells[ieta + ETA_DIVS / 2]; }
+};
 
 /// Entry point for the program.
 int main(int argc, char *argv[])
@@ -81,14 +98,26 @@ int main(int argc, char *argv[])
   }
   in->cd();
 
+  results *r;
   try {
     calo::towerset tset;
-    analyze(*c, tset);
+    r = new results(*c, tset);
   } catch (std::exception &e) {
     std::cerr << "Error: " << e.what() << std::endl;
   } catch (...) {
     std::cerr << "Error: Unexpected exception" << std::endl;
   }
+
+  std::cout << "return {" << std::endl;
+  for (int ieta = -ETA_DIVS / 2; ieta < ETA_DIVS / 2; ++ieta) {
+    std::vector<int> ignored = r->hotcells(ieta);
+    std::cout << "  [" << ieta << "] = { energy = " << r->energy(ieta) << ", ";
+    for (unsigned iphi = 0; iphi < ignored.size(); ++iphi) {
+      std::cout << ignored[iphi] << ", ";
+    }
+    std::cout << "}," << std::endl;
+  }
+  std::cout << "}" << std::endl;
 
   return 0;
 }
@@ -139,7 +168,7 @@ config::config(std::istream &in) :
         throw std::runtime_error("pvalue must be in (0, 1]");
       }
     } else {
-      // <eta> <hotcount>
+      // <eta> <numhot>
       long ieta;
       try {
         ieta = strtol(linenb, words.front());
@@ -211,7 +240,26 @@ struct hit
 };
 std::vector<hit> hit::all;
 
-void analyze(const config &c, calo::towerset &tset)
+TH1D *make_histogram(int ieta, double energy);
+
+struct stats
+{
+  double pvalue;
+  int maxphi;
+  explicit stats(const TH1D *hits, const std::vector<int> &ignore);
+};
+
+struct cost_function
+{
+  double pvalue;
+  int numhot;
+  int ieta;
+
+  std::vector<int> getignored(double energy) const;
+  double operator() (double energy) const;
+};
+
+results::results(const config &c, calo::towerset &tset)
 {
   // Load all hits into hit::all (for optimization)
   hit::all.reserve(100000);
@@ -228,4 +276,97 @@ void analyze(const config &c, calo::towerset &tset)
       hit::all.push_back(h);
     }
   }
+
+  // Optimizer
+  ROOT::Math::RootFinder rootfinder;
+  rootfinder.SetMethod(ROOT::Math::RootFinder::kGSL_BRENT);
+
+  // For each eta
+  for (int ieta = -ETA_DIVS / 2; ieta < ETA_DIVS / 2; ++ieta) {
+    cost_function cost;
+    cost.ieta = ieta;
+    cost.pvalue = c.pvalue();
+    cost.numhot = c.numhot(ieta);
+
+    int status = rootfinder.Solve(cost, 0, 5, 500, 1e-4, 1e-4);
+    if (status != 1) {
+      std::cerr << "Error: Optimization failled for ieta=" << ieta << std::endl;
+      std::exit(2);
+    }
+    double energy = std::ceil((rootfinder.Root() + 1e-3) * 100) / 100;
+
+    std::vector<int> ignored = cost.getignored(energy);
+    for (unsigned i = 0; i < ignored.size(); ++i) {
+      ignored[i] -= PHI_DIVS / 2;
+    }
+
+    _energies[ieta + ETA_DIVS / 2] = energy;
+    _hotcells[ieta + ETA_DIVS / 2] = ignored;
+  }
+}
+
+TH1D *make_histogram(int ieta, double energy)
+{
+  TH1D *hits = new TH1D("hits", "hits", PHI_DIVS, -M_PI, M_PI);
+
+  const std::vector<hit>::iterator end = hit::all.end();
+  for (std::vector<hit>::iterator it = hit::all.begin(); it != end; ++it) {
+    if (it->hadenergy > energy && ieta == std::floor(it->eta / 0.085)) {
+      hits->Fill(it->phi);
+    }
+  }
+
+  return hits;
+}
+
+stats::stats(const TH1D *hits, const std::vector<int> &ignore)
+{
+  int max = 0;
+
+  double sum = 0;
+  double sumsq = 0;
+
+  for (int i = 1; i <= hits->GetNbinsX(); ++i) {
+    if (std::find(ignore.begin(), ignore.end(), i) == ignore.end()) {
+      double content = hits->GetBinContent(i);
+      if (content > 0) {
+        sum += content;
+        sumsq += content * content;
+        if (content > max) {
+          max = content;
+          maxphi = i;
+        }
+      }
+    }
+  }
+
+  int numgood = PHI_DIVS - ignore.size();
+
+  double mean = sum / numgood;
+  double chi2 = sumsq / mean - numgood * mean;
+
+  pvalue = TMath::Prob(chi2, numgood - 1);
+}
+
+std::vector<int> cost_function::getignored(double energy) const
+{
+  std::vector<int> ignore;
+
+  TH1D *hits = make_histogram(ieta, energy);
+  stats s(hits, ignore);
+
+  while (s.pvalue < pvalue) {
+    ignore.push_back(s.maxphi);
+    s = stats(hits, ignore);
+  }
+
+  delete hits;
+
+  return ignore;
+}
+
+double cost_function::operator() (double energy) const
+{
+  int ignored = getignored(energy).size();
+  return ignored - numhot + (ignored > numhot ? energy : -energy);
 }
