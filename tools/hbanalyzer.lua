@@ -28,12 +28,30 @@ end
 
 -- Execute action
 if arg[2] == 'slice' then
-  if arg[3] then
+  if #arg >= 3 then
     local numhot = tonumber(arg[3])
     print('ieta', 'eta', 'energy')
     for ieta, tab in pairs(data[numhot]) do
       print(ieta, (ieta + 0.5) * 0.085, tab.energy)
     end
+  else
+    print('Error: missing parameter for action \'slice\'')
+    os.exit(1)
+  end
+elseif arg[2] == 'energy' then
+  if #arg >= 3 then
+    ok, spec = pcall(loadfile(arg[3]))
+    if not ok then
+      print('Error: cannot load \'' .. arg[3] .. '\'')
+      os.exit(1)
+    end
+    print('ieta', 'eta', 'numhot', 'energy')
+    print(-17, -1.4025, 0, 0)
+    for ieta = -16, 15 do
+      numhot = spec[ieta]
+      print(ieta, (ieta + 0.5) * 0.085, numhot, data[numhot][ieta].energy)
+    end
+    print(16, 1.4025, 0, 0)
   else
     print('Error: missing parameter for action \'nslice\'')
     os.exit(1)
