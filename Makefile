@@ -6,7 +6,7 @@ clean:
 	$(RM) *.o
 	$(RM) -r doc/html
 
-CXXFLAGS := -I. $(CXXFLAGS)
+CXXFLAGS := -I. $(CXXFLAGS) -O2
 CXXFLAGS := -pedantic -Wextra -Wall `root-config --cflags` $(CXXFLAGS)
 LDFLAGS := `root-config --libs` $(LDFLAGS)
 
