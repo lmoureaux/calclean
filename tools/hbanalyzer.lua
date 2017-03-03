@@ -1,6 +1,7 @@
 -- Author: Louis Moureaux
 -- Year:   2017
 
+local io = require('io')
 local math = require('math')
 local os = require('os')
 
@@ -8,7 +9,7 @@ function printusage()
   print('Usage: ' .. arg[0] .. ' <datafile> <action> <args>...')
   print('Where:')
   print('  <datafile> is a file containing the output of hbanalyzer')
-  print('  <action> is one of the following: slice, energy, hotcells')
+  print('  <action> is one of the following: slice, energy, hotcells, luacode')
   print('  <args> depend on the specified action')
 end
 
@@ -70,6 +71,37 @@ elseif arg[2] == 'hotcells' then
         print(ieta, (ieta + 0.5) * 0.085, iphi, (iphi + 0.5) * math.pi / 36)
       end
     end
+  else
+    print('Error: missing parameter for action \'hotcells\'')
+    os.exit(1)
+  end
+elseif arg[2] == 'luacode' then
+  if #arg >= 3 then
+    ok, spec = pcall(loadfile(arg[3]))
+    if not ok then
+      print('Error: cannot load \'' .. arg[3] .. '\'')
+      os.exit(1)
+    end
+    print('local hotcells = {')
+    print('  [-17] = { },')
+    for ieta = -16, 15 do
+      numhot = spec[ieta]
+      io.write('  [' .. ieta .. '] = { ')
+      for _, iphi in ipairs(data[numhot][ieta]) do
+        io.write(iphi .. ', ')
+      end
+      print('},')
+    end
+    print('  [16] = { },')
+    print('}')
+    print('local hotcells_energies = {')
+    print('  [-17] = 0,')
+    for ieta = -16, 15 do
+      numhot = spec[ieta]
+      print('  [' .. ieta .. '] = ' .. data[numhot][ieta].energy .. ',')
+    end
+    print('  [16] = 0,')
+    print('}')
   else
     print('Error: missing parameter for action \'hotcells\'')
     os.exit(1)
