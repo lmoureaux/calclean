@@ -20,5 +20,5 @@ test: test.o libcalofilter.a
 
 doc: doc/html/index.html
 
-doc/html/index.html: *.h *.cpp
+doc/html/index.html: *.h *.cpp doc/stylesheet.css
 	doxygen
