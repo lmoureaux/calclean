@@ -22,6 +22,8 @@ test: test.o libcalofilter.a
 
 tools: tools/hbanalyzer
 
+tools/hbanalyzer.o: tools/hbanalyzer.cpp calofilter.h hb.h
+
 tools/hbanalyzer: tools/hbanalyzer.o libcalofilter.a
 	$(CXX) $(CXXFLAGS) tools/hbanalyzer.o libcalofilter.a -o tools/hbanalyzer $(LDFLAGS)
 

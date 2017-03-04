@@ -140,3 +140,13 @@ ieta    eta     iphi    phi
 1       0.1275  16      1.4398966328953
 ...
 ~~~
+
+## C++ code {#formatting-cppcode}
+
+~~~
+lua tools/hbanalyzer.lua hbanalyzer.dat cppcode counts.dat
+~~~
+
+This operation will print C++ code that defines two variables, @c energies and
+@c hotcells, to be used as arguments of the @ref calo::goodhb_filter
+"goodhb_filter" constructor. See @ref hb_default_params.cpp for example output.

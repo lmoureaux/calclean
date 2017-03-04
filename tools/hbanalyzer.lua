@@ -75,6 +75,42 @@ elseif arg[2] == 'hotcells' then
     print('Error: missing parameter for action \'hotcells\'')
     os.exit(1)
   end
+elseif arg[2] == 'cppcode' then
+  if #arg >= 3 then
+    ok, spec = pcall(loadfile(arg[3]))
+    if not ok then
+      print('Error: cannot load \'' .. arg[3] .. '\'')
+      os.exit(1)
+    end
+    print([[
+// THIS FILE WAS GENERATED
+/**
+ * @file
+ * @brief  Defines cuts for @ref calo::goodhb_filter "goodhb_filter"
+ * @author @c tools/hbanalyzer.lua
+ * @date   ]] .. os.date('%F') .. [[\n
+ * @warning This file was generated automatically by @c tools/hbanalyzer.lua. It
+ *          should not be modified by hand.
+ */]])
+    print('float energies[34];')
+    print('std::vector<int> hotcells[34];')
+    print('/// @cond')
+    print('energies[0] = 0;')
+    for ieta = -16, 15 do
+      numhot = spec[ieta]
+      print('energies[' .. (ieta + 16) ..
+            '] = ' .. data[numhot][ieta].energy .. ';')
+      for _, iphi in ipairs(data[numhot][ieta]) do
+        print('hotcells[' .. (ieta + 16) ..
+              '].push_back(' .. iphi .. ');')
+      end
+    end
+    print('energies[33] = 0;')
+    print('/// @endcond')
+  else
+    print('Error: missing parameter for action \'cppcode\'')
+    os.exit(1)
+  end
 elseif arg[2] == 'luacode' then
   if #arg >= 3 then
     ok, spec = pcall(loadfile(arg[3]))
@@ -103,7 +139,7 @@ elseif arg[2] == 'luacode' then
     print('  [16] = 0,')
     print('}')
   else
-    print('Error: missing parameter for action \'hotcells\'')
+    print('Error: missing parameter for action \'luacode\'')
     os.exit(1)
   end
 else
