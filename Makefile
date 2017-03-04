@@ -27,5 +27,5 @@ tools/hbanalyzer: tools/hbanalyzer.o libcalofilter.a
 
 doc: doc/html/index.html
 
-doc/html/index.html: *.h *.cpp tools/*.cpp
+doc/html/index.html: *.h *.cpp tools/*.cpp tools/*.md
 	doxygen
