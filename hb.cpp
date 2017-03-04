@@ -9,6 +9,9 @@
 
 #include <cmath>
 
+#include <cassert>
+#include <iostream>
+
 namespace calo {
 
 /**
@@ -62,13 +65,16 @@ goodhb_filter::goodhb_filter(float energies[ETA_DIVS],
 
 bool goodhb_filter::operator() (const tower_ref &tower) const
 {
+  if (!tower.ishb()) {
+    return false;
+  }
   int ieta = std::floor(tower.eta() / 0.085) + ETA_DIVS / 2;
   // Energy cut
   if (tower.hadenergy() < _energies[ieta]) {
     return false;
   }
   // Hot cells
-  int iphi = std::floor(tower.phi() * 2 * M_PI / PHI_DIVS);
+  int iphi = std::floor(tower.phi() * PHI_DIVS / 2 / M_PI);
   const std::vector<int>::const_iterator end = _hotcells[ieta].end();
   for (std::vector<int>::const_iterator it = _hotcells[ieta].begin();
        it != end; ++it) {

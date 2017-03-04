@@ -98,10 +98,10 @@ elseif arg[2] == 'cppcode' then
     print('energies[0] = 0;')
     for ieta = -16, 15 do
       numhot = spec[ieta]
-      print('energies[' .. (ieta + 16) ..
+      print('energies[' .. (ieta + 17) ..
             '] = ' .. data[numhot][ieta].energy .. ';')
       for _, iphi in ipairs(data[numhot][ieta]) do
-        print('hotcells[' .. (ieta + 16) ..
+        print('hotcells[' .. (ieta + 17) ..
               '].push_back(' .. iphi .. ');')
       end
     end
