@@ -17,8 +17,8 @@ namespace calo {
  *
  * This module contains various filters related to the HCAL Barrel. The most
  * basic is @ref hb_filter "hb", which returns all HB towers. The
- * @ref coldhb_filter "coldhb" filter is designed to remove hot cells; and
- * @ref goodhb_filter "goodhb" defines energy thresholds.
+ * @ref goodhb_filter "goodhb" filter removes hot cells and defines energy
+ * thresholds.
  */
 
 /**
