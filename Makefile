@@ -12,7 +12,7 @@ LDFLAGS := `root-config --libs` $(LDFLAGS)
 calofilter.o: calofilter.cpp calofilter.h
 eb.o: eb.cpp calofilter.h eb.h
 
-libcalofilter.a: calofilter.o calofilter.h eb.o
+libcalofilter.a: calofilter.o calofilter.h logic.h eb.o
 	$(AR) rcs libcalofilter.a calofilter.o eb.o
 
 test: test.o libcalofilter.a

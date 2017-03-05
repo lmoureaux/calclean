@@ -196,6 +196,9 @@ public:
 class filter
 {
 public:
+  /// Destructor
+  virtual ~filter() {}
+
   /// Returns @c true if the tower passes the filter
   virtual bool operator() (const tower_ref &) const = 0;
 };
