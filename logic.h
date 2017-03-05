@@ -130,22 +130,6 @@ inline calo::and_filter operator&& (const T &lhs, const U &rhs)
   return and_filter(detail::copy(lhs), detail::copy(rhs));
 }
 
-/// Logical NOT on a filter
-/**
- * This operator makes a copy of @c arg and builds a @ref not_filter from it.
- *
- * @note Due to a bug in CINT, this operator is disabled when using ROOT in
- *       interpreted mode.
- *
- * @tparam T The type of the argument. It must be copy-constructible.
- * @ingroup logic
- */
-template<typename T>
-inline calo::not_filter operator! (const T &arg)
-{
-  return calo::not_filter(detail::copy(arg));
-}
-
 /// Logical OR between two filters
 /**
  * This operator makes a copy of @c lhs and @c rhs and builds an @ref or_filter
@@ -164,6 +148,22 @@ template<typename T, typename U>
 inline calo::or_filter operator|| (const T &lhs, const U &rhs)
 {
   return or_filter(detail::copy(lhs), detail::copy(rhs));
+}
+
+/// Logical NOT on a filter
+/**
+ * This operator makes a copy of @c arg and builds a @ref not_filter from it.
+ *
+ * @note Due to a bug in CINT, this operator is disabled when using ROOT in
+ *       interpreted mode.
+ *
+ * @tparam T The type of the argument. It must be copy-constructible.
+ * @ingroup logic
+ */
+template<typename T>
+inline calo::not_filter operator! (const T &arg)
+{
+  return calo::not_filter(detail::copy(arg));
 }
 
 #endif // __CINT__
