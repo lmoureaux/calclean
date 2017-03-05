@@ -9,6 +9,7 @@
  */
 
 #include "calofilter.h"
+#include "logic.h"
 
 namespace calo {
 
@@ -78,6 +79,14 @@ coldeb_filter::coldeb_filter()
  * @relates coldeb_filter
  */
 static const coldeb_filter coldeb;
+
+/// A filter for hot towers.
+/**
+ * This is the opposite of @ref coldeb.
+ *
+ * @relates coldeb_filter
+ */
+static const and_filter hoteb = and_filter(&eb, new not_filter(&coldeb));
 
 class goodeb_filter : public filter
 {
