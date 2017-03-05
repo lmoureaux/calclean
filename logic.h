@@ -17,15 +17,6 @@
 
 namespace calo {
 
-namespace detail {
-  /// Returns a pointer to a copy of the object passed in argument.
-  template<typename T>
-  T *copy(const T &object)
-  {
-    return new T(object);
-  }
-} // namespace detail
-
 /// A filter that implements a logical AND between two filters
 /**
  * @warning This class doesn't delete its arguments upon destruction. This
@@ -50,12 +41,6 @@ bool and_filter::operator() (const tower_ref &tower) const
   const filter &rhs = *_rhs;
   const tower_ref t = tower; // ROOT's pseudo-C++ parser
   return lhs(t) && rhs(t);
-}
-
-template<typename T, typename U>
-inline and_filter operator&& (const T &lhs, const U &rhs)
-{
-  return and_filter(detail::copy(lhs), detail::copy(rhs));
 }
 
 /// A filter that implements a logical OR between two filters
@@ -83,12 +68,6 @@ bool or_filter::operator() (const tower_ref &tower) const
   return lhs(t) || rhs(t);
 }
 
-template<typename T, typename U>
-inline or_filter operator|| (const T &lhs, const U &rhs)
-{
-  return or_filter(detail::copy(lhs), detail::copy(rhs));
-}
-
 /// A filter that negates another (logical NOT)
 /**
  * @warning This class doesn't delete its arguments upon destruction. This
@@ -112,11 +91,39 @@ bool not_filter::operator() (const tower_ref &tower) const
   return !arg(t);
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
+// ROOT's pseudo-C++ parser
+#ifndef __CINT__
+
+namespace detail {
+  /// Returns a pointer to a copy of the object passed in argument.
+  template<typename T>
+  T *copy(const T &object)
+  {
+    return new T(object);
+  }
+} // namespace detail
+
+template<typename T, typename U>
+inline and_filter operator&& (const T &lhs, const U &rhs)
+{
+  return and_filter(detail::copy(lhs), detail::copy(rhs));
+}
+
 template<typename T>
 inline calo::not_filter operator! (const T &arg)
 {
   return calo::not_filter(detail::copy(arg));
 }
+
+template<typename T, typename U>
+inline or_filter operator|| (const T &lhs, const U &rhs)
+{
+  return or_filter(detail::copy(lhs), detail::copy(rhs));
+}
+
+#endif // __CINT__
 
 } // namespace calo
 
