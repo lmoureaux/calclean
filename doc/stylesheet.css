@@ -1,0 +1,8 @@
+div.contents,
+div.headertitle,
+ul.tablist
+{
+  max-width: 24cm;
+  margin-left: auto;
+  margin-right: auto;
+}

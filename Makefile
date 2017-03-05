@@ -14,7 +14,7 @@ calofilter.o: calofilter.cpp calofilter.h
 eb.o: eb.cpp calofilter.h eb.h
 hb.o: hb.cpp calofilter.h hb.h
 
-libcalofilter.a: calofilter.o calofilter.h eb.o hb.o
+libcalofilter.a: calofilter.o calofilter.h logic.h eb.o hb.o
 	$(AR) rcs libcalofilter.a calofilter.o eb.o hb.o
 
 test: test.o libcalofilter.a
@@ -29,5 +29,5 @@ tools/hbanalyzer: tools/hbanalyzer.o libcalofilter.a
 
 doc: doc/html/index.html
 
-doc/html/index.html: *.h *.cpp tools/*.cpp tools/*.md
+doc/html/index.html: *.h *.cpp tools/*.cpp tools/*.md doc/stylesheet.css
 	doxygen
