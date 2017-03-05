@@ -26,17 +26,10 @@ int main()
   TFile *in = new TFile("../../../data/pPb_MinBias_2013_v5.root", "READ");
   in->cd();
 
-// ROOT's pseudo-C++ parser
-#ifdef __CINT__
   // There is a memory leak here, but it's ok as long as it stays outside of the
   // main loop.
   calo::and_filter f = calo::and_filter(&calo::goodeb,
                                         new calo::not_filter(&calo::coldeb));
-#else
-  // There is a memory leak here, but it's ok as long as it stays outside of the
-  // main loop.
-  calo::and_filter f = calo::goodeb && !calo::coldeb;
-#endif
 
   calo::towerset set;
   for (long entry = 0; entry < 100; ++entry) {
