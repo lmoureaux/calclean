@@ -61,13 +61,13 @@ goodhb_filter::goodhb_filter()
  */
 const goodhb_filter goodhb;
 
-/// An filter for bad HB cells.
+/// A filter for bad HB cells.
 /**
  * This is the opposite of @ref goodhb.
  *
  * @relates goodhb_filter
  */
-const not_filter badhb = not_filter(&goodhb);
+const and_filter badhb = and_filter(&hb, new not_filter(&goodhb));
 
 } // namespace calo
 
