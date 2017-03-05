@@ -14,10 +14,9 @@
  * @defgroup logic Logic
  * @brief Filters implementing boolean logic
  *
- * This module contains filters that implement basic logical operations. In
- * addition, it overloads logical operators to work on filters.
+ * This module contains filters that implement basic logical operations.
  *
- * @warning Chaining logical operators will lead to memory leaks.
+ * @warning Classes in this module don't delete their arguments.
  */
 
 namespace calo {
@@ -95,78 +94,6 @@ bool not_filter::operator() (const tower_ref &tower) const
   const tower_ref t = tower; // ROOT's pseudo-C++ parser
   return !arg(t);
 }
-
-////////////////////////////////////////////////////////////////////////////////
-
-// ROOT's pseudo-C++ parser
-#ifndef __CINT__
-
-namespace detail {
-  /// Returns a pointer to a copy of the object passed in argument.
-  template<typename T>
-  T *copy(const T &object)
-  {
-    return new T(object);
-  }
-} // namespace detail
-
-/// Logical AND between two filters
-/**
- * This operator makes a copy of @c lhs and @c rhs and builds an @ref and_filter
- * from them.
- *
- * @note Due to a bug in CINT, this operator is disabled when using ROOT in
- *       interpreted mode.
- *
- * @tparam T The type of the left-hand-side argument. It must be
- *           copy-constructible.
- * @tparam U The type of the right-hand-side argument. It must be
- *           copy-constructible.
- * @ingroup logic
- */
-template<typename T, typename U>
-inline calo::and_filter operator&& (const T &lhs, const U &rhs)
-{
-  return and_filter(detail::copy(lhs), detail::copy(rhs));
-}
-
-/// Logical OR between two filters
-/**
- * This operator makes a copy of @c lhs and @c rhs and builds an @ref or_filter
- * from them.
- *
- * @note Due to a bug in CINT, this operator is disabled when using ROOT in
- *       interpreted mode.
- *
- * @tparam T The type of the left-hand-side argument. It must be
- *           copy-constructible.
- * @tparam U The type of the right-hand-side argument. It must be
- *           copy-constructible.
- * @ingroup logic
- */
-template<typename T, typename U>
-inline calo::or_filter operator|| (const T &lhs, const U &rhs)
-{
-  return or_filter(detail::copy(lhs), detail::copy(rhs));
-}
-
-/// Logical NOT on a filter
-/**
- * This operator makes a copy of @c arg and builds a @ref not_filter from it.
- *
- * @note Due to a bug in CINT, this operator is disabled when using ROOT in
- *       interpreted mode.
- *
- * @tparam T The type of the argument. It must be copy-constructible.
- * @ingroup logic
- */
-template<typename T>
-inline calo::not_filter operator! (const T &arg)
-{
-  return calo::not_filter(detail::copy(arg));
-}
-
-#endif // __CINT__
 
 } // namespace calo
 
