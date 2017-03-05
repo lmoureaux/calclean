@@ -13,6 +13,11 @@
 /**
  * @defgroup logic Logic
  * @brief Filters implementing boolean logic
+ *
+ * This module contains filters that implement basic logical operations. In
+ * addition, it overloads logical operators to work on filters.
+ *
+ * @warning Chaining logical operators will lead to memory leaks.
  */
 
 namespace calo {
