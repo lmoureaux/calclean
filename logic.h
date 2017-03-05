@@ -37,7 +37,7 @@ public:
   /// @c true
   and_filter(const filter *lhs, const filter *rhs) : _lhs(lhs), _rhs(rhs) {}
 
-  bool operator() (const tower_ref &tower) const;
+  inline bool operator() (const tower_ref &tower) const;
 };
 
 bool and_filter::operator() (const tower_ref &tower) const
@@ -62,7 +62,7 @@ public:
   /// @c rhs is @c true
   or_filter(const filter *lhs, const filter *rhs) : _lhs(lhs), _rhs(rhs) {}
 
-  bool operator() (const tower_ref &tower) const;
+  inline bool operator() (const tower_ref &tower) const;
 };
 
 bool or_filter::operator() (const tower_ref &tower) const
@@ -86,7 +86,7 @@ public:
   /// Creates a filter that returns @c true when @c arg is @c false
   explicit not_filter(const filter *arg) : _arg(arg) {}
 
-  bool operator() (const tower_ref &tower) const;
+  inline bool operator() (const tower_ref &tower) const;
 };
 
 bool not_filter::operator() (const tower_ref &tower) const
