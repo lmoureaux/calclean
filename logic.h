@@ -28,6 +28,8 @@ namespace detail {
 
 /// A filter that implements a logical AND between two filters
 /**
+ * @warning This class doesn't delete its arguments upon destruction. This
+ *          behaviour easily leads to memory leaks.
  * @ingroup logic
  */
 class and_filter : public filter
@@ -58,6 +60,8 @@ inline and_filter operator&& (const T &lhs, const U &rhs)
 
 /// A filter that implements a logical OR between two filters
 /**
+ * @warning This class doesn't delete its arguments upon destruction. This
+ *          behaviour easily leads to memory leaks.
  * @ingroup logic
  */
 class or_filter : public filter
@@ -87,6 +91,8 @@ inline or_filter operator|| (const T &lhs, const U &rhs)
 
 /// A filter that negates another (logical NOT)
 /**
+ * @warning This class doesn't delete its arguments upon destruction. This
+ *          behaviour easily leads to memory leaks.
  * @ingroup logic
  */
 class not_filter : public filter
