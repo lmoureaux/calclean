@@ -12,20 +12,27 @@ LDFLAGS := `root-config --libs` $(LDFLAGS)
 
 calofilter.o: calofilter.cpp calofilter.h
 eb.o: eb.cpp calofilter.h eb.h
+ee.o: ee.cpp calofilter.h ee.h
 hb.o: hb.cpp calofilter.h hb.h
 
-libcalofilter.a: calofilter.o calofilter.h logic.h eb.o hb.o
+libcalofilter.a: calofilter.o calofilter.h logic.h eb.o ee.o hb.o
 	$(AR) rcs libcalofilter.a calofilter.o eb.o hb.o
 
 test: test.o libcalofilter.a
 	$(CXX) $(CXXFLAGS) test.o libcalofilter.a -o test $(LDFLAGS)
 
-tools: tools/hbanalyzer
+tools: tools/eeanalyzer tools/hbanalyzer tools/heanalyzer
 
+tools/eeanalyzer.o: tools/eeanalyzer.cpp calofilter.h ee.h
 tools/hbanalyzer.o: tools/hbanalyzer.cpp calofilter.h hb.h
+tools/heanalyzer.o: tools/heanalyzer.cpp calofilter.h he.h
 
+tools/eeanalyzer: tools/eeanalyzer.o libcalofilter.a
+	$(CXX) $(CXXFLAGS) tools/eeanalyzer.o libcalofilter.a -o tools/eeanalyzer $(LDFLAGS)
 tools/hbanalyzer: tools/hbanalyzer.o libcalofilter.a
 	$(CXX) $(CXXFLAGS) tools/hbanalyzer.o libcalofilter.a -o tools/hbanalyzer $(LDFLAGS)
+tools/heanalyzer: tools/heanalyzer.o libcalofilter.a
+	$(CXX) $(CXXFLAGS) tools/heanalyzer.o libcalofilter.a -o tools/heanalyzer $(LDFLAGS)
 
 doc: doc/html/index.html
 
